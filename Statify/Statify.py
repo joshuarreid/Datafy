@@ -1,6 +1,6 @@
 import pylast
-from Token import lastfm_network
-import Timestamp
+from Statify.Token import lastfm_network
+import Statify.Timestamp as Timestamp
 
 
 ### Converts playback time from UTC time zone to EST time zone ####
@@ -44,9 +44,13 @@ def getTopArtist(user, periodInput):
     return topTracksList
 
 
-def playCount(user):
+def totalPlayCount(user):
     playCount = lastfm_network.get_user(user).get_playcount()
     return '{:,}'.format(playCount) ### formats number with comma
+
+def trackPlayCount(track_title, artist):
+    track = lastfm_network.get_track(artist, track_title)
+    return track.get_playcount()
 
 def compareUsersTopTracks(user, otherUser, periodInput):
     topTracksListUser = lastfm_network.get_user(user).get_top_tracks(period = periodInput, limit = 150)
