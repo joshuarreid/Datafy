@@ -3,13 +3,8 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
-import matplotlib.animation as animation
 from matplotlib import animation
 from IPython.display import HTML
-
-import numpy as np
-import Statify.Statify as lastFm
-
 
 ### Creating new csv file with Year, Month, Day, Time columns
 """
