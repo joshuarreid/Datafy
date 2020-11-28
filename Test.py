@@ -1,4 +1,5 @@
 #https://benjaminbenben.com/lastfm-to-csv/
+#https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks
 import pandas as pd
 import numpy as np
 import Statify.Statify as lastFm
@@ -13,12 +14,13 @@ history['Month']= history['Date'].dt.month
 history['Day']= history['Date'].dt.day
 history['Hour']= history['Date'].dt.hour
 history['Weekday'] = history['Date'].dt.day_name()
-history.to_csv('History.csv')"""
+history.to_csv('csv/LastFmHistoryCleaned.csv')"""
 
 
 
-history = pd.read_csv('History.csv')
-weather = pd.read_csv('Weather.csv')
+history = pd.read_csv('csv/LastFmHistoryCleaned.csv')
+weather = pd.read_csv('csv/Weather.csv')
+spotifyDataArchive = pd.read_csv('csv/data_w_genres.csv')
 history = pd.merge(history, weather, on=['Month', 'Day'])
 
 
@@ -34,6 +36,13 @@ history2017 = history[history.Year == 2017.0]
 
 ## First getting data on each individual song I listen to
 listened_to_tracks_2020 = pd.DataFrame(history, columns=['Track', 'Artist', 'Album']).drop_duplicates(subset=['Track'])
+
+### Creating Dataframe for artist information
+spotify_artist_data = pd.merge(listened_to_tracks_2020, spotifyDataArchive, on='Artist', how='inner')
+spotify_artist_data = spotify_artist_data.drop_duplicates(subset='Artist', keep="last")
+del spotify_artist_data['Album']
+del spotify_artist_data['Track']
+
 
 # Getting number of plays for each song
 listened_to_tracks_2020['Plays'] = history['Track'].map(history['Track'].value_counts())
@@ -55,7 +64,7 @@ playback_temperature = history.groupby('Track').Temperature.median().to_frame()
 listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_temperature, on="Track")
 listened_to_tracks_2020 = listened_to_tracks_2020.sort_values(['Plays', 'Temperature'], ascending=[False, False]).reset_index()
 
-listened_to_tracks_2020.to_csv('ListeningData.csv')
+listened_to_tracks_2020.to_csv('csv/listened_to_tracks_2020.csv')
 
 
 
