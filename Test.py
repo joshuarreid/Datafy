@@ -153,7 +153,7 @@ def draw_barchart(month):
               ax.text(plays, i, " " + str(plays), ha='left')  # 38: plays
 
 
-       ax.text(1, 0.4, months[month], transform=ax.transAxes, color='#777777', size=46, ha='right', weight=800)
+       ax.text(1, 0.4, months[month], transform=ax.transAxes, color='#2b3137', size=46, ha='right', weight=800)
        ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.0f}'))
        ax.xaxis.set_ticks_position('top')
        ax.tick_params(axis='x', colors='#777777', labelsize=12)
