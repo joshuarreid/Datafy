@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import animation
 from IPython.display import HTML
+import numpy as np
 
 ### Creating new csv file with Year, Month, Day, Time columns
 """
@@ -70,16 +71,16 @@ listened_to_tracks_2020.to_csv('csv/listened_to_tracks_2020.csv')
 
 
 
-"""### Creating Plots
+### Creating Plots
 fig = plt.figure(1)
 fig.set_figheight(5)
-fig.set_figwidth(9.8)
+fig.set_figwidth(13)
 plt.rc('axes',edgecolor='#fafbfc')
 plt.rcParams.update({'font.size': 8})
 ax = fig.add_subplot(1, 1, 1)
 rect = fig.patch
 rect.set_facecolor('#24292e')
-"""
+
 
 """##Season vs Top Ten Artist
 season_vs_topartists = pd.DataFrame(listened_to_tracks_2020, columns=['Artist', 'Month']).drop_duplicates(subset=['Artist']).head(10).reset_index()
@@ -94,17 +95,21 @@ ax.tick_params(axis='x', colors='#fafbfc')
 ax.set_xticks(range(len(artists)))
 ax.set_xticklabels(artists, color='#fafbfc')
 ax.set_yticks(range(12))
-ax.set_yticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], color='#fafbfc')
-plt.close('all')"""
+ax.set_yticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], color='#fafbfc')"""
 
 
 
-"""
+
+
 ##Temperature vs Top Ten Artist
 temperature_vs_topartists = pd.DataFrame(listened_to_tracks_2020, columns=['Artist', 'Temperature']).drop_duplicates(subset=['Artist']).head(15).reset_index()
+temperature_vs_topartists = temperature_vs_topartists.sort_values(['Temperature'], ascending=[True]).reset_index()
 artists = temperature_vs_topartists['Artist']
 temperatures = temperature_vs_topartists['Temperature']
+
 plt.barh(artists, temperatures, color='#2dba4e')
+for i, (plays, artist) in enumerate(zip(temperature_vs_topartists['Temperature'], temperature_vs_topartists['Artist'])):
+       ax.text(plays, i, " " + str(plays), ha='left', color='#fafbfc')  # 38: plays
 ax = plt.gca()
 ax.XColor ='#fafbfc'
 ax.set_facecolor('#2b3137')
@@ -115,9 +120,11 @@ ax.set_yticks(range(len(artists)))
 ax.set_yticklabels(artists, color='#fafbfc')
 ax.set_xticks(np.arange(0, 100, step=10))
 ax.set_xticklabels(np.arange(0, 100, step=10), color='#fafbfc')
-plt.show()
+plt.savefig('graphs/temperature_vs_topartists.png')
+plt.close('all')
 
-"""
+
+
 
 ##Genre vs Month
 artist_vs_month = pd.DataFrame(history2020, columns=['Artist', 'Month', 'Year'])
