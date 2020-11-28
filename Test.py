@@ -2,7 +2,11 @@
 #https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks
 import pandas as pd
 from matplotlib import pyplot as plt
+import matplotlib.ticker as ticker
+import matplotlib.animation as animation
 from matplotlib import animation
+from IPython.display import HTML
+
 import numpy as np
 import Statify.Statify as lastFm
 
@@ -71,7 +75,7 @@ listened_to_tracks_2020.to_csv('csv/listened_to_tracks_2020.csv')
 
 
 
-### Creating Plots
+"""### Creating Plots
 fig = plt.figure(1)
 fig.set_figheight(5)
 fig.set_figwidth(9.8)
@@ -80,7 +84,7 @@ plt.rcParams.update({'font.size': 8})
 ax = fig.add_subplot(1, 1, 1)
 rect = fig.patch
 rect.set_facecolor('#24292e')
-
+"""
 
 """##Season vs Top Ten Artist
 season_vs_topartists = pd.DataFrame(listened_to_tracks_2020, columns=['Artist', 'Month']).drop_duplicates(subset=['Artist']).head(10).reset_index()
@@ -98,6 +102,9 @@ ax.set_yticks(range(12))
 ax.set_yticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], color='#fafbfc')
 plt.close('all')"""
 
+
+
+"""
 ##Temperature vs Top Ten Artist
 temperature_vs_topartists = pd.DataFrame(listened_to_tracks_2020, columns=['Artist', 'Temperature']).drop_duplicates(subset=['Artist']).head(15).reset_index()
 artists = temperature_vs_topartists['Artist']
@@ -114,6 +121,59 @@ ax.set_yticklabels(artists, color='#fafbfc')
 ax.set_xticks(np.arange(0, 100, step=10))
 ax.set_xticklabels(np.arange(0, 100, step=10), color='#fafbfc')
 plt.show()
+
+"""
+
+##Genre vs Month
+artist_vs_month = pd.DataFrame(history2020, columns=['Artist', 'Month', 'Year'])
+artist_vs_month = pd.merge(artist_vs_month, spotify_artist_data, how='inner', on='Artist')
+artist_vs_month = pd.DataFrame(artist_vs_month, columns=['Artist', 'Month', 'Year'])
+artist_vs_month = artist_vs_month.groupby(["Artist", "Month"]).size().reset_index(name="Plays")
+artist_vs_month = artist_vs_month.drop_duplicates(subset=['Artist', 'Month']).sort_values('Month', ascending=False)
+print(artist_vs_month)
+
+
+
+fig, ax = plt.subplots(figsize=(15, 8))
+def draw_barchart(month):
+       months = {1: 'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec'}
+       currentMonth = (artist_vs_month[artist_vs_month['Month'].eq(month)]
+                       .sort_values(by='Plays', ascending=False)
+                       .head(10))
+       ax.clear()
+       currentMonth = currentMonth[::-1]
+       ax.barh(currentMonth['Artist'], currentMonth['Plays'], color='#2dba4e')
+       dx = currentMonth['Plays'].max()
+          # flip values from top to bottom
+       # iterate over the values to plot labels and values
+       for i, (plays, artist) in enumerate(zip(currentMonth['Plays'], currentMonth['Artist'])):
+              ax.text(plays, i, artist + " ", ha='right')  # khalid: name
+              ax.text(plays, i, " " + str(plays), ha='left')  # 38: plays
+
+
+       ax.text(1, 0.4, months[month], transform=ax.transAxes, color='#777777', size=46, ha='right', weight=800)
+       ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:,.0f}'))
+       ax.xaxis.set_ticks_position('top')
+       ax.tick_params(axis='x', colors='#777777', labelsize=12)
+       ax.set_yticks([])
+       ax.margins(0, 0.01)
+       ax.grid(which='major', axis='x', linestyle='-')
+       ax.set_axisbelow(True)
+       ax.text(0, 1.1, 'Monthly Top Artists',
+               transform=ax.transAxes, size=24, weight=600, ha='left')
+       ax.text(0, 1.06, 'Plays', transform=ax.transAxes, size=12, color='#777777')
+       plt.box(False)
+
+
+fig, ax = plt.subplots(figsize=(17, 9))
+animator = animation.FuncAnimation(fig, draw_barchart, frames=range(1, 11))
+Writer = animation.writers['pillow']
+writer = Writer(fps=.4, metadata=dict(artist='Me'), bitrate=1000)
+HTML(animator.save('animation.gif', writer=writer))
+
+
+
+
 
 
 
