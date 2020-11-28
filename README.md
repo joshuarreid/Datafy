@@ -6,3 +6,6 @@ The goal of this project is to organize my personal listeninig history into usef
 <p align="center">
   <img width="1200" src="https://github.com/joshuarreid/Datafy/blob/master/graphs/temperature_vs_topartists.png" />
 </p>
+
+
+*Documentation in-progress*
