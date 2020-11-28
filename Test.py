@@ -1,6 +1,8 @@
 #https://benjaminbenben.com/lastfm-to-csv/
 #https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks
 import pandas as pd
+from matplotlib import pyplot as plt
+from matplotlib import animation
 import numpy as np
 import Statify.Statify as lastFm
 
@@ -45,40 +47,71 @@ del spotify_artist_data['Track']
 
 
 # Getting number of plays for each song
-listened_to_tracks_2020['Plays'] = history['Track'].map(history['Track'].value_counts())
+listened_to_tracks_2020['Plays'] = history2020['Track'].map(history2020['Track'].value_counts())
 
 # Getting the most common Year a song is listened to
-playback_hours = history.groupby('Track').Year.median().to_frame()
+playback_hours = history2020.groupby('Track').Year.median().to_frame()
 listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_hours, on="Track")
 
 # Getting the most common Month
-playback_month = history.groupby('Track').Month.median().to_frame()
+playback_month = history2020.groupby('Track').Month.median().to_frame()
 listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_month, on="Track")
 
 # Getting the most common time of day a song is listened to
-playback_hours = history.groupby('Track').Hour.median().to_frame()
+playback_hours = history2020.groupby('Track').Hour.median().to_frame()
 listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_hours, on="Track")
 
 # Getting average temperature for each Track
-playback_temperature = history.groupby('Track').Temperature.median().to_frame()
+playback_temperature = history2020.groupby('Track').Temperature.median().to_frame()
 listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_temperature, on="Track")
-listened_to_tracks_2020 = listened_to_tracks_2020.sort_values(['Plays', 'Temperature'], ascending=[False, False]).reset_index()
+listened_to_tracks_2020 = listened_to_tracks_2020.sort_values(['Plays'], ascending=[False]).reset_index()
 
 listened_to_tracks_2020.to_csv('csv/listened_to_tracks_2020.csv')
 
 
 
 
+### Creating Plots
+fig = plt.figure(1)
+fig.set_figheight(5)
+fig.set_figwidth(9.8)
+plt.rc('axes',edgecolor='#fafbfc')
+plt.rcParams.update({'font.size': 6})
+ax = fig.add_subplot(1, 1, 1)
+rect = fig.patch
+rect.set_facecolor('#24292e')
+
+
+"""##Season vs Top Ten Artist
+season_vs_topartists = pd.DataFrame(listened_to_tracks_2020, columns=['Artist', 'Month']).drop_duplicates(subset=['Artist']).head(10).reset_index()
+del season_vs_topartists['index']
+artists = season_vs_topartists['Artist']
+seasons = season_vs_topartists['Month']
+plt.bar(artists, seasons, color='#2dba4e')
+ax = plt.gca()
+ax.XColor ='#fafbfc'
+ax.set_facecolor('#2b3137')
+ax.tick_params(axis='x', colors='#fafbfc')
+ax.set_xticks(range(len(artists)))
+ax.set_xticklabels(artists, color='#fafbfc')
+ax.set_yticks(range(12))
+ax.set_yticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], color='#fafbfc')
+plt.close('all')"""
+
+##Temperature vs Top Ten Artist
+temperature_vs_topartists = pd.DataFrame(listened_to_tracks_2020, columns=['Artist', 'Temperature']).drop_duplicates(subset=['Artist']).head(15).reset_index()
+artists = temperature_vs_topartists['Artist']
+temperatures = temperature_vs_topartists['Temperature']
+plt.barh(artists, temperatures, color='#2dba4e')
+ax = plt.gca()
+ax.XColor ='#fafbfc'
+ax.set_facecolor('#2b3137')
+ax.tick_params(axis='x', colors='#fafbfc')
+ax.set_yticks(range(len(artists)))
+ax.set_yticklabels(artists, color='#fafbfc')
+ax.set_xticks(np.arange(0, 100, step=10))
+ax.set_xticklabels(np.arange(0, 100, step=10), color='#fafbfc')
+plt.show()
 
 
 
-
-
-"""
-from matplotlib import pyplot as plt
-
-days = [0,1,2,3,4,5,7]
-money_spent = [10, 12, 12,10,14,22,1]
-
-plt.plot(days, money_spent)
-plt.show()"""
