@@ -149,8 +149,8 @@ def draw_barchart(month):
           # flip values from top to bottom
        # iterate over the values to plot labels and values
        for i, (plays, artist) in enumerate(zip(currentMonth['Plays'], currentMonth['Artist'])):
-              ax.text(plays, i, artist + " ", ha='right')  # khalid: name
-              ax.text(plays, i, " " + str(plays), ha='left')  # 38: plays
+              ax.text(plays, i, artist + " ", ha='right', size=15)  # khalid: name
+              ax.text(plays, i, " " + str(plays), ha='left',size=15)  # 38: plays
 
 
        ax.text(1, 0.4, months[month], transform=ax.transAxes, color='#2b3137', size=46, ha='right', weight=800)
