@@ -170,7 +170,7 @@ def draw_barchart(month):
 fig, ax = plt.subplots(figsize=(17, 9))
 animator = animation.FuncAnimation(fig, draw_barchart, frames=range(1, 11))
 Writer = animation.writers['pillow']
-writer = Writer(fps=.4, metadata=dict(artist='Me'), bitrate=1000)
+writer = Writer(fps=.55, metadata=dict(artist='Me'), bitrate=1000)
 HTML(animator.save('animation.gif', writer=writer))
 
 
