@@ -37,36 +37,39 @@ history2017 = history[history.Year == 2017.0]
 ### Working with 2020
 
 ## First getting data on each individual song I listen to
-listened_to_tracks_2020 = pd.DataFrame(history, columns=['Track', 'Artist', 'Album']).drop_duplicates(subset=['Track'])
+listened_to_tracks = pd.DataFrame(history, columns=['Track', 'Artist', 'Album']).drop_duplicates(subset=['Track'])
 
 ### Creating Dataframe for artist information
-spotify_artist_data = pd.merge(listened_to_tracks_2020, spotifyDataArchive, on='Artist', how='inner')
+print("LISTENED TO TRACKS 2020")
+print(listened_to_tracks)
+spotify_artist_data = pd.merge(listened_to_tracks, spotifyDataArchive, on='Artist', how='inner')
 spotify_artist_data = spotify_artist_data.drop_duplicates(subset='Artist', keep="last")
 del spotify_artist_data['Album']
 del spotify_artist_data['Track']
 
 
+
 # Getting number of plays for each song
-listened_to_tracks_2020['Plays'] = history2020['Track'].map(history2020['Track'].value_counts())
+listened_to_tracks['Plays'] = history2020['Track'].map(history2020['Track'].value_counts())
 
 # Getting the most common Year a song is listened to
 playback_hours = history2020.groupby('Track').Year.median().to_frame()
-listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_hours, on="Track")
+listened_to_tracks = pd.merge(listened_to_tracks, playback_hours, on="Track")
 
 # Getting the most common Month
 playback_month = history2020.groupby('Track').Month.median().to_frame()
-listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_month, on="Track")
+listened_to_tracks = pd.merge(listened_to_tracks, playback_month, on="Track")
 
 # Getting the most common time of day a song is listened to
 playback_hours = history2020.groupby('Track').Hour.median().to_frame()
-listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_hours, on="Track")
+listened_to_tracks = pd.merge(listened_to_tracks, playback_hours, on="Track")
 
 # Getting average temperature for each Track
 playback_temperature = history2020.groupby('Track').Temperature.median().to_frame()
-listened_to_tracks_2020 = pd.merge(listened_to_tracks_2020, playback_temperature, on="Track")
-listened_to_tracks_2020 = listened_to_tracks_2020.sort_values(['Plays'], ascending=[False]).reset_index()
+listened_to_tracks = pd.merge(listened_to_tracks, playback_temperature, on="Track")
+listened_to_tracks = listened_to_tracks.sort_values(['Plays'], ascending=[False]).reset_index()
 
-listened_to_tracks_2020.to_csv('csv/listened_to_tracks_2020.csv')
+
 
 
 
@@ -102,7 +105,7 @@ ax.set_yticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep
 
 
 ##Temperature vs Top Ten Artist
-temperature_vs_topartists = pd.DataFrame(listened_to_tracks_2020, columns=['Artist', 'Temperature']).drop_duplicates(subset=['Artist']).head(15).reset_index()
+temperature_vs_topartists = pd.DataFrame(listened_to_tracks, columns=['Artist', 'Temperature']).drop_duplicates(subset=['Artist']).head(15).reset_index()
 temperature_vs_topartists = temperature_vs_topartists.sort_values(['Temperature'], ascending=[True]).reset_index()
 artists = temperature_vs_topartists['Artist']
 temperatures = temperature_vs_topartists['Temperature']
@@ -133,6 +136,14 @@ artist_vs_month = pd.DataFrame(artist_vs_month, columns=['Artist', 'Month', 'Yea
 artist_vs_month = artist_vs_month.groupby(["Artist", "Month"]).size().reset_index(name="Plays")
 artist_vs_month = artist_vs_month.drop_duplicates(subset=['Artist', 'Month']).sort_values('Month', ascending=False)
 print(artist_vs_month)
+
+
+jupyter = pd.merge(history, spotify_artist_data, on='Artist', how='inner').sort_values('Month', ascending=True)
+del jupyter['count']
+del jupyter['Date']
+
+jupyter.to_csv('jupyter.csv')
+
 
 
 
